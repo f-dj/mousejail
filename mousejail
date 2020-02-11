@@ -15,11 +15,18 @@ if [ "$#" -gt 0 ]; then
 	fi
 fi
 
+
+# TODO: use parameter for programm
+BORDER=5
+
 #check if a windowid has been specified otherwise use the currently focused window
 if [ "$#" -gt 1 ]; then
 	WINDOW_ID=$2
 else
-	WINDOW_ID=$(xdotool getwindowfocus)
+    echo Waiting 5 seconds until focused window is used for mousejail.
+    sleep 5
+    echo Done, going to jail mouse in the currently focused window!
+    WINDOW_ID=$(xdotool getwindowfocus)
 fi
 
 create_barriers()
@@ -34,6 +41,12 @@ create_barriers()
 	WINDOW_Y_NEW=$(echo $WINDOW_INFO | awk -F'[ ,x]' '{print $5;}')
 	WINDOW_WIDTH_NEW=$(echo $WINDOW_INFO | awk -F'[ ,x]' '{print $9;}')
 	WINDOW_HEIGHT_NEW=$(echo $WINDOW_INFO | awk -F'[ ,x]' '{print $10;}')
+
+    WINDOW_X_NEW=$(expr $WINDOW_X_NEW + $BORDER)
+    WINDOW_Y_NEW=$(expr $WINDOW_Y_NEW + $BORDER)
+
+    WINDOW_WIDTH_NEW=$(expr $WINDOW_WIDTH_NEW - $(expr $BORDER \* 2))
+    WINDOW_HEIGHT_NEW=$(expr $WINDOW_HEIGHT_NEW - $(expr $BORDER \* 2))
 
 	#check if barriers have not been created or need to be updated
 	if [ "$(ps -p $BARRIER_LEFT -o comm=)" != "xbarrier" ] || [ "$WINDOW_X" != "$WINDOW_X_NEW" ] || [ "$WINDOW_Y" != "$WINDOW_Y_NEW" ] || [ "$WINDOW_WIDTH" != "$WINDOW_WIDTH_NEW" ] || [ "$WINDOW_HEIGHT" != "$WINDOW_HEIGHT_NEW" ]; then
