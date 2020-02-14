@@ -4,28 +4,17 @@
 
 SCRIPT_PATH=$(dirname $0)
 
-#check if toggle mode is activated and kill the other instance of mousejail if it exists
-if [ "$#" -gt 0 ]; then
-	if [ "$1" -eq 1 ]; then
-		MOUSEJAIL_COUNT=$(pgrep -f '/bin/sh .*mousejail' | wc -w)
-		if [ "$MOUSEJAIL_COUNT" -gt 2 ]; then
-			killall mousejail 
-			exit 0
-		fi
-	fi
-fi
-
-
-# TODO: use parameter for programm
-BORDER=5
+# TODO: use parameter and make BORDER optional 
+BORDER=$1
 
 #check if a windowid has been specified otherwise use the currently focused window
 if [ "$#" -gt 1 ]; then
+    echo "Going to jail mouse in window with (decimal) ID: $2"
 	WINDOW_ID=$2
 else
-    echo Waiting 5 seconds until focused window is used for mousejail.
+    echo Waiting 5 seconds until focused window will be used for mousejail.
     sleep 5
-    echo Done, going to jail mouse in the currently focused window!
+    echo Done waiting, going to jail mouse in currently focused window!
     WINDOW_ID=$(xdotool getwindowfocus)
 fi
 
